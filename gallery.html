@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gallery — Villa Nocturne, Goa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{--night:#0B0F1A;--deep:#0d1128;--gold:#C5A059;--sand:#E6BE8A;--purple:#1a1035}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:#fff;font-family:'Inter',sans-serif;font-weight:300;overflow-x:hidden}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--night)}
+::-webkit-scrollbar-thumb{background:var(--gold)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 5rem;height:76px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);background:rgba(11,15,26,0.72);border-bottom:1px solid rgba(197,160,89,0.1)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--gold);letter-spacing:0.08em;text-decoration:none}
+.nav-links{display:flex;gap:2.8rem;list-style:none}
+.nav-links a{font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.35s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--gold)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-cta{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(197,160,89,0.5);padding:0.5rem 1.5rem;text-decoration:none;transition:all 0.35s}
+.nav-cta:hover{background:var(--gold);color:var(--night)}
+@media(max-width:900px){nav{padding:0 1.5rem}.nav-links,.nav-cta{display:none}}
+
+/* PAGE HERO */
+.page-hero{
+  height:58vh;min-height:440px;
+  position:relative;display:flex;align-items:flex-end;
+  padding:0 5rem 5rem;overflow:hidden;
+}
+.page-hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1540541338537-1220059e4395?w=1920&q=85');
+  background-size:cover;background-position:center 30%;
+  transform:scale(1.06);filter:brightness(0.3) saturate(0.65);
+}
+.page-hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(11,15,26,1) 0%,rgba(11,15,26,0.35) 55%,transparent 100%);
+}
+.page-hero-content{position:relative;z-index:2}
+.page-hero-content span{font-size:0.65rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1rem}
+.page-hero-content h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5.5vw,5rem);font-weight:500;line-height:1.08}
+.page-hero-content h1 em{font-style:italic;color:var(--sand)}
+
+/* GALLERY SECTION */
+.gallery-wrap{padding:7rem 5rem;background:var(--night)}
+.gallery-controls{
+  max-width:1280px;margin:0 auto 4rem;
+  display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem;
+}
+.gallery-controls-left span{font-size:0.64rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1rem}
+.gallery-controls-left h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:500;line-height:1.14}
+.gallery-controls-left h2 em{font-style:italic;color:var(--sand)}
+.filter-row{display:flex;gap:0.5rem;flex-wrap:wrap}
+.filt{
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;
+  padding:0.5rem 1.2rem;border:1px solid rgba(255,255,255,0.12);
+  background:transparent;color:rgba(255,255,255,0.45);
+  cursor:pointer;transition:all 0.3s;
+}
+.filt:hover,.filt.on{border-color:var(--gold);color:var(--gold);background:rgba(197,160,89,0.07)}
+
+/* MASONRY */
+.masonry{
+  max-width:1280px;margin:0 auto;
+  columns:3;column-gap:3px;
+}
+.m-item{
+  break-inside:avoid;margin-bottom:3px;
+  position:relative;overflow:hidden;cursor:pointer;
+  opacity:0;transform:translateY(28px);
+}
+.m-item img{width:100%;display:block;transition:transform 0.95s cubic-bezier(0.25,0.46,0.45,0.94)}
+.m-item:hover img{transform:scale(1.07)}
+.m-hover{
+  position:absolute;inset:0;
+  background:rgba(11,15,26,0.72);
+  opacity:0;transition:opacity 0.4s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4rem;
+}
+.m-item:hover .m-hover{opacity:1}
+.m-hover .h-tag{font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold)}
+.m-hover .h-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;color:#fff}
+
+/* LIGHTBOX */
+.lb{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(6,9,16,0.96);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.4s;
+}
+.lb.open{opacity:1;pointer-events:all}
+.lb-img{
+  max-width:88vw;max-height:84vh;object-fit:contain;
+  transform:scale(0.9);transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.lb.open .lb-img{transform:scale(1)}
+.lb-close{
+  position:absolute;top:2rem;right:2rem;
+  width:42px;height:42px;border:1px solid rgba(197,160,89,0.4);
+  background:transparent;color:var(--gold);font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;
+}
+.lb-close:hover{background:var(--gold);color:var(--night)}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;border:1px solid rgba(197,160,89,0.25);
+  background:transparent;color:var(--gold);font-size:1.5rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;
+}
+.lb-nav:hover{background:rgba(197,160,89,0.15)}
+.lb-prev{left:2rem}
+.lb-next{right:2rem}
+.lb-cap{
+  position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
+  text-align:center;
+}
+.lb-cap .ct{font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold)}
+.lb-cap .cn{font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;margin-top:0.25rem}
+
+/* FOOTER */
+footer{background:#060910;border-top:1px solid rgba(197,160,89,0.08);padding:6rem 5rem 3rem}
+.footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:600;color:var(--gold);letter-spacing:0.08em;text-decoration:none;display:block;margin-bottom:1.2rem}
+.footer-desc{font-size:0.83rem;line-height:1.7;color:rgba(255,255,255,0.35);max-width:280px}
+.footer-col h4{font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:0.75rem}
+.footer-col ul li a{font-size:0.83rem;color:rgba(255,255,255,0.38);text-decoration:none;transition:color 0.3s}
+.footer-col ul li a:hover{color:var(--sand)}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-bottom p{font-size:0.72rem;color:rgba(255,255,255,0.22)}
+
+@media(max-width:900px){
+  .page-hero,.gallery-wrap{padding-left:1.5rem;padding-right:1.5rem}
+  .masonry{columns:2}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
+}
+@media(max-width:540px){
+  .masonry{columns:1}
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Villa Nocturne</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="rooms.html">Rooms</a></li>
+    <li><a href="gallery.html" class="active">Gallery</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <a href="contact.html" class="nav-cta">Reserve</a>
+</nav>
+
+<div class="page-hero" id="pageHero">
+  <div class="page-hero-bg" id="pageHeroBg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <span>Visual Journal</span>
+    <h1>The <em>Gallery</em></h1>
+  </div>
+</div>
+
+<section class="gallery-wrap">
+  <div class="gallery-controls">
+    <div class="gallery-controls-left">
+      <span>Every Frame a Memory</span>
+      <h2>Scenes from <em>Villa Nocturne</em></h2>
+    </div>
+    <div class="filter-row">
+      <button class="filt on" data-f="all">All</button>
+      <button class="filt" data-f="exterior">Exterior</button>
+      <button class="filt" data-f="interior">Interiors</button>
+      <button class="filt" data-f="pool">Pool</button>
+      <button class="filt" data-f="nature">Nature</button>
+    </div>
+  </div>
+
+  <div class="masonry" id="masonry">
+    <div class="m-item" data-cat="exterior" data-title="The Estate" data-cap="Exterior">
+      <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=700&q=85" alt="Villa" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Exterior</span><span class="h-title">The Estate</span></div>
+    </div>
+    <div class="m-item" data-cat="pool" data-title="Infinity Edge" data-cap="Pool">
+      <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=700&q=85" alt="Pool" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Pool</span><span class="h-title">Infinity Edge</span></div>
+    </div>
+    <div class="m-item" data-cat="interior" data-title="The Living Room" data-cap="Interiors">
+      <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=700&q=85" alt="Living Room" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Interiors</span><span class="h-title">The Living Room</span></div>
+    </div>
+    <div class="m-item" data-cat="nature" data-title="Golden Hour" data-cap="Nature">
+      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=85" alt="Sunset" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Nature</span><span class="h-title">Golden Hour</span></div>
+    </div>
+    <div class="m-item" data-cat="interior" data-title="The Master Suite" data-cap="Interiors">
+      <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=85" alt="Suite" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Interiors</span><span class="h-title">The Master Suite</span></div>
+    </div>
+    <div class="m-item" data-cat="exterior" data-title="Garden Path" data-cap="Exterior">
+      <img src="https://images.unsplash.com/photo-1540541338537-1220059e4395?w=700&q=85" alt="Garden" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Exterior</span><span class="h-title">Garden Path</span></div>
+    </div>
+    <div class="m-item" data-cat="pool" data-title="Evening Swim" data-cap="Pool">
+      <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=700&q=85" alt="Pool eve" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Pool</span><span class="h-title">Evening Swim</span></div>
+    </div>
+    <div class="m-item" data-cat="interior" data-title="The Spa Bath" data-cap="Interiors">
+      <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=700&q=85" alt="Bathroom" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Interiors</span><span class="h-title">The Spa Bath</span></div>
+    </div>
+    <div class="m-item" data-cat="nature" data-title="Palm Canopy" data-cap="Nature">
+      <img src="https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=700&q=85" alt="Palms" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Nature</span><span class="h-title">Palm Canopy</span></div>
+    </div>
+    <div class="m-item" data-cat="exterior" data-title="Villa at Dusk" data-cap="Exterior">
+      <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=700&q=85" alt="Dusk" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Exterior</span><span class="h-title">Villa at Dusk</span></div>
+    </div>
+    <div class="m-item" data-cat="interior" data-title="Dining Terrace" data-cap="Interiors">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=85" alt="Dining" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Interiors</span><span class="h-title">Dining Terrace</span></div>
+    </div>
+    <div class="m-item" data-cat="nature" data-title="Arabian Sea" data-cap="Nature">
+      <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=700&q=85" alt="Sea" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Nature</span><span class="h-title">Arabian Sea</span></div>
+    </div>
+    <div class="m-item" data-cat="interior" data-title="Garden Suite" data-cap="Interiors">
+      <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=700&q=85" alt="Suite" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Interiors</span><span class="h-title">Garden Suite</span></div>
+    </div>
+    <div class="m-item" data-cat="pool" data-title="Pool Deck" data-cap="Pool">
+      <img src="https://images.unsplash.com/photo-1563911302283-d2bc129e7570?w=700&q=85" alt="Deck" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Pool</span><span class="h-title">Pool Deck</span></div>
+    </div>
+    <div class="m-item" data-cat="nature" data-title="Tropical Dawn" data-cap="Nature">
+      <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=700&q=85" alt="Dawn" loading="lazy"/>
+      <div class="m-hover"><span class="h-tag">Nature</span><span class="h-title">Tropical Dawn</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <img class="lb-img" id="lbImg" src="" alt=""/>
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+  <div class="lb-cap"><div class="ct" id="lbCap"></div><div class="cn" id="lbTitle"></div></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div>
+      <a href="index.html" class="footer-logo">Villa Nocturne</a>
+      <p class="footer-desc">A private luxury estate in the heart of North Goa. Where the night sky meets the sea, and time forgets to move.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rooms.html">Rooms</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Experiences</h4>
+      <ul>
+        <li><a href="#">Private Dining</a></li>
+        <li><a href="#">Spa & Wellness</a></li>
+        <li><a href="#">Beach Excursions</a></li>
+        <li><a href="#">Yoga Retreat</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+919876543210">+91 98765 43210</a></li>
+        <li><a href="mailto:stay@villanocturne.com">stay@villanocturne.com</a></li>
+        <li><a href="#">Anjuna, North Goa</a></li>
+        <li><a href="#">India 403509</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Villa Nocturne. All rights reserved.</p>
+    <p>Built by <span style="color:var(--gold)">Adsprint</span></p>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+gsap.to('#pageHeroBg',{yPercent:22,ease:'none',scrollTrigger:{trigger:'#pageHero',start:'top top',end:'bottom top',scrub:true}});
+
+const items=document.querySelectorAll('.m-item');
+items.forEach((el,i)=>{
+  gsap.to(el,{
+    opacity:1,y:0,duration:0.85,ease:'power2.out',
+    delay:(i%3)*0.1,
+    scrollTrigger:{trigger:el,start:'top 93%',toggleActions:'play none none none'}
+  });
+});
+
+/* FILTER */
+document.querySelectorAll('.filt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    const f=btn.dataset.f;
+    items.forEach(item=>{
+      const show=f==='all'||item.dataset.cat===f;
+      if(show){item.style.display='';gsap.to(item,{opacity:1,scale:1,duration:0.4})}
+      else{gsap.to(item,{opacity:0,scale:0.95,duration:0.3,onComplete:()=>item.style.display='none'})}
+    });
+  });
+});
+
+/* LIGHTBOX */
+const lb=document.getElementById('lb');
+const lbImg=document.getElementById('lbImg');
+const lbTitle=document.getElementById('lbTitle');
+const lbCap=document.getElementById('lbCap');
+let cur=0,vis=[];
+
+function openLb(idx){
+  vis=[...items].filter(i=>i.style.display!=='none');
+  cur=idx;
+  const it=vis[cur];
+  lbImg.src=it.querySelector('img').src;
+  lbTitle.textContent=it.dataset.title;
+  lbCap.textContent=it.dataset.cap;
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+items.forEach((it,i)=>it.addEventListener('click',()=>openLb(i)));
+document.getElementById('lbClose').addEventListener('click',()=>{lb.classList.remove('open');document.body.style.overflow=''});
+document.getElementById('lbNext').addEventListener('click',()=>{
+  cur=(cur+1)%vis.length;
+  const it=vis[cur];
+  gsap.fromTo(lbImg,{opacity:0,x:30},{opacity:1,x:0,duration:0.4});
+  lbImg.src=it.querySelector('img').src;lbTitle.textContent=it.dataset.title;lbCap.textContent=it.dataset.cap;
+});
+document.getElementById('lbPrev').addEventListener('click',()=>{
+  cur=(cur-1+vis.length)%vis.length;
+  const it=vis[cur];
+  gsap.fromTo(lbImg,{opacity:0,x:-30},{opacity:1,x:0,duration:0.4});
+  lbImg.src=it.querySelector('img').src;lbTitle.textContent=it.dataset.title;lbCap.textContent=it.dataset.cap;
+});
+lb.addEventListener('click',e=>{if(e.target===lb){lb.classList.remove('open');document.body.style.overflow=''}});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='ArrowRight')document.getElementById('lbNext').click();
+  if(e.key==='ArrowLeft')document.getElementById('lbPrev').click();
+  if(e.key==='Escape'){lb.classList.remove('open');document.body.style.overflow=''}
+});
+</script>
+</body>
+</html>
